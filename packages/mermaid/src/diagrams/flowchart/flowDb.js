@@ -461,6 +461,8 @@ export const clear = function (ver = 'gen-1') {
   firstGraphFlag = true;
   version = ver;
   commonClear();
+  vertexLocationMap = new Map();
+  linkLocationArray = [];
 };
 export const setGen = (ver) => {
   version = ver || 'gen-2';
@@ -817,4 +819,108 @@ export default {
   makeUniq,
   setDiagramTitle,
   getDiagramTitle,
+  addVertexLocation,
+  getVertexLocationMap,
+  addLinkLocation,
+  getLinkLocationArray,
 };
+
+/**
+ * @typedef Location Location of vertex
+ * @property {number} firstLine First line of vertex
+ * @property {number} lastLine Last line of vertex
+ * @property {number} firstColumn First column of vertex
+ * @property {number} lastColumn Last column of vertex
+ */
+
+/**
+ * @typedef ParserLocation Location of vertex
+ * @property {number} first_line First line of vertex
+ * @property {number} last_line Last line of vertex
+ * @property {number} first_column First column of vertex
+ * @property {number} last_column Last column of vertex
+ */
+
+/**
+ * @type {Map<string, Array<Location>>} vertexLocationMap
+ */
+let vertexLocationMap = new Map();
+
+/**
+ * @returns {Map<string, Array<Location>>}
+ */
+export function getVertexLocationMap() {
+  return vertexLocationMap;
+}
+
+/**
+ * @param {string} id
+ * @param {ParserLocation} location
+ */
+export function addVertexLocation(id, location) {
+  const existingLocations = vertexLocationMap.get(id) ?? [];
+
+  existingLocations.push({
+    firstLine: location.first_line,
+    lastLine: location.last_line,
+    firstColumn: location.first_column,
+    lastColumn: location.last_column,
+  });
+
+  vertexLocationMap.set(id, existingLocations);
+}
+
+/**
+ * @typedef LinkLocation Location of link
+ * @property {ParserLocation} location
+ * @property {ParserLocation} startNodeLocation
+ * @property {ParserLocation} linkLocation
+ * @property {ParserLocation} endNodeLocation
+ */
+
+/**
+ * @type {Array<LinkLocation>} linkLocationArray
+ */
+let linkLocationArray = [];
+
+/**
+ * @returns {Array<LinkLocation>}
+ */
+export function getLinkLocationArray() {
+  return linkLocationArray;
+}
+
+/**
+ * @param {ParserLocation} location
+ * @param {ParserLocation} startNodeLocation
+ * @param {ParserLocation} linkLocation
+ * @param {ParserLocation} endNodeLocation
+ */
+export function addLinkLocation(location, startNodeLocation, linkLocation, endNodeLocation) {
+  linkLocationArray.push({
+    location: {
+      firstLine: location.first_line,
+      lastLine: location.last_line,
+      firstColumn: location.first_column,
+      lastColumn: location.last_column,
+    },
+    startNodeLocation: {
+      firstLine: startNodeLocation.first_line,
+      lastLine: startNodeLocation.last_line,
+      firstColumn: startNodeLocation.first_column,
+      lastColumn: startNodeLocation.last_column,
+    },
+    linkLocation: {
+      firstLine: linkLocation.first_line,
+      lastLine: linkLocation.last_line,
+      firstColumn: linkLocation.first_column,
+      lastColumn: linkLocation.last_column,
+    },
+    endNodeLocation: {
+      firstLine: endNodeLocation.first_line,
+      lastLine: endNodeLocation.last_line,
+      firstColumn: endNodeLocation.first_column,
+      lastColumn: endNodeLocation.last_column,
+    },
+  });
+}
