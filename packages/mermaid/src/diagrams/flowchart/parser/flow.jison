@@ -341,9 +341,9 @@ statement
     | clickStatement separator
     {$$=[];}
     | subgraph SPACE textNoTags SQS text SQE separator document end
-    {$$=yy.addSubGraph($textNoTags,$document,$text);}
+    { yy.addSubGraphLocation($textNoTags, @$, @subgraph, @separator, @end); $$=yy.addSubGraph($textNoTags,$document,$text);}
     | subgraph SPACE textNoTags separator document end
-    {$$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
+    { yy.addSubGraphLocation($textNoTags, @$, @subgraph, @separator, @end); $$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
     // | subgraph SPACE textNoTags separator document end
     // {$$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
     | subgraph separator document end

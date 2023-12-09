@@ -462,6 +462,7 @@ export const clear = function (ver = 'gen-1') {
   version = ver;
   commonClear();
   vertexLocationMap = new Map();
+  subGraphLocationMap = new Map();
   linkLocationArray = [];
 };
 export const setGen = (ver) => {
@@ -821,6 +822,8 @@ export default {
   getDiagramTitle,
   addVertexLocation,
   getVertexLocationMap,
+  addSubGraphLocation,
+  getSubGraphLocationMap,
   addLinkLocation,
   getLinkLocationArray,
 };
@@ -854,11 +857,67 @@ export function getVertexLocationMap() {
 }
 
 /**
+ * @type {Map<string, Array<Location>>} subGraphLocationMap
+ */
+let subGraphLocationMap = new Map();
+
+/**
+ * @returns {Map<string, Array<Location>>}
+ */
+export function getSubGraphLocationMap() {
+  return subGraphLocationMap;
+}
+
+/**
+ * @param {object} id
+ * @property {string} text text of id
+ * @param {ParserLocation} location
+ * @param {ParserLocation} subGraphLocation
+ * @param {ParserLocation} separatorLocation
+ * @param {ParserLocation} endLocation
+ */
+export function addSubGraphLocation(
+  id,
+  location,
+  subGraphLocation,
+  separatorLocation,
+  endLocation
+) {
+  const idText = id.text.trim();
+
+  const existingLocations = subGraphLocationMap.get(idText) ?? [];
+
+  existingLocations.push({
+    location: {
+      firstLine: location.first_line,
+      lastLine: location.last_line,
+      firstColumn: location.first_column,
+      lastColumn: location.last_column,
+    },
+    startSubGraphLocation: {
+      firstLine: Math.min(subGraphLocation.first_line, separatorLocation.first_line),
+      lastLine: Math.max(subGraphLocation.last_line, separatorLocation.first_line),
+      firstColumn: Math.min(subGraphLocation.first_column, separatorLocation.first_column),
+      lastColumn: Math.max(subGraphLocation.last_column, separatorLocation.first_column),
+    },
+    endSubGraphLocation: {
+      firstLine: endLocation.first_line,
+      lastLine: endLocation.last_line,
+      firstColumn: endLocation.first_column,
+      lastColumn: endLocation.last_column,
+    },
+  });
+
+  subGraphLocationMap.set(idText, existingLocations);
+}
+
+/**
  * @param {string} id
  * @param {ParserLocation} location
  */
 export function addVertexLocation(id, location) {
-  const existingLocations = vertexLocationMap.get(id) ?? [];
+  const idText = id.trim();
+  const existingLocations = vertexLocationMap.get(idText) ?? [];
 
   existingLocations.push({
     firstLine: location.first_line,
@@ -867,7 +926,7 @@ export function addVertexLocation(id, location) {
     lastColumn: location.last_column,
   });
 
-  vertexLocationMap.set(id, existingLocations);
+  vertexLocationMap.set(idText, existingLocations);
 }
 
 /**
