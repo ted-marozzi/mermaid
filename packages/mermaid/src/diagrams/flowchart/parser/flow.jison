@@ -341,9 +341,9 @@ statement
     | clickStatement separator
     {$$=[];}
     | subgraph SPACE textNoTags SQS text SQE separator document end
-    {$$=yy.addSubGraph($textNoTags,$document,$text);}
+    { yy.addSubGraphLocation($textNoTags, @$, @subgraph, @separator, @end); $$=yy.addSubGraph($textNoTags,$document,$text);}
     | subgraph SPACE textNoTags separator document end
-    {$$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
+    { yy.addSubGraphLocation($textNoTags, @$, @subgraph, @separator, @end); $$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
     // | subgraph SPACE textNoTags separator document end
     // {$$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
     | subgraph separator document end
@@ -378,39 +378,39 @@ styledVertex: vertex
     ;
 
 vertex:  idString SQS text SQE
-        {$$ = $idString;yy.addVertex($idString,$text,'square');}
+        {yy.addVertexLocation($idString, @$);$$ = $idString;yy.addVertex($idString,$text,'square');}
     | idString DOUBLECIRCLESTART text DOUBLECIRCLEEND
-        {$$ = $idString;yy.addVertex($idString,$text,'doublecircle');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'doublecircle');}
     | idString PS PS text PE PE
-        {$$ = $idString;yy.addVertex($idString,$text,'circle');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'circle');}
     | idString '(-' text '-)'
-        {$$ = $idString;yy.addVertex($idString,$text,'ellipse');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'ellipse');}
     | idString STADIUMSTART text STADIUMEND
-        {$$ = $idString;yy.addVertex($idString,$text,'stadium');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'stadium');}
     | idString SUBROUTINESTART text SUBROUTINEEND
-        {$$ = $idString;yy.addVertex($idString,$text,'subroutine');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'subroutine');}
     | idString VERTEX_WITH_PROPS_START NODE_STRING\[field] COLON NODE_STRING\[value] PIPE text SQE
-        {$$ = $idString;yy.addVertex($idString,$text,'rect',undefined,undefined,undefined, Object.fromEntries([[$field, $value]]));}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'rect',undefined,undefined,undefined, Object.fromEntries([[$field, $value]]));}
     | idString CYLINDERSTART text CYLINDEREND
-        {$$ = $idString;yy.addVertex($idString,$text,'cylinder');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'cylinder');}
     | idString PS text PE
-        {$$ = $idString;yy.addVertex($idString,$text,'round');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'round');}
     | idString DIAMOND_START text DIAMOND_STOP
-        {$$ = $idString;yy.addVertex($idString,$text,'diamond');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'diamond');}
     | idString DIAMOND_START DIAMOND_START text DIAMOND_STOP DIAMOND_STOP
-        {$$ = $idString;yy.addVertex($idString,$text,'hexagon');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'hexagon');}
     | idString TAGEND text SQE
-        {$$ = $idString;yy.addVertex($idString,$text,'odd');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'odd');}
     | idString TRAPSTART text TRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'trapezoid');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'trapezoid');}
     | idString INVTRAPSTART text INVTRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'inv_trapezoid');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'inv_trapezoid');}
     | idString TRAPSTART text INVTRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'lean_right');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'lean_right');}
     | idString INVTRAPSTART text TRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'lean_left');}
+        {yy.addVertexLocation($idString, @$); $$ = $idString;yy.addVertex($idString,$text,'lean_left');}
     | idString
-        { /*console.warn('h: ', $idString);*/$$ = $idString;yy.addVertex($idString);}
+        {yy.addVertexLocation($idString, @$); /*console.warn('h: ', $idString);*/$$ = $idString;yy.addVertex($idString);}
     ;
 
 

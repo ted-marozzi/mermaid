@@ -447,6 +447,9 @@ export const clear = function (ver = 'gen-1') {
   version = ver;
   config = getConfig();
   commonClear();
+  vertexLocationMap = new Map();
+  subGraphLocationMap = new Map();
+  linkLocationArray = [];
 };
 
 export const setGen = (ver: string) => {
@@ -786,4 +789,166 @@ export default {
   makeUniq,
   setDiagramTitle,
   getDiagramTitle,
+  addVertexLocation,
+  getVertexLocationMap,
+  addSubGraphLocation,
+  getSubGraphLocationMap,
+  addLinkLocation,
+  getLinkLocationArray,
 };
+
+/**
+ * @typedef Location Location of vertex
+ * @property {number} firstLine First line of vertex
+ * @property {number} lastLine Last line of vertex
+ * @property {number} firstColumn First column of vertex
+ * @property {number} lastColumn Last column of vertex
+ */
+
+/**
+ * @typedef ParserLocation Location of vertex
+ * @property {number} first_line First line of vertex
+ * @property {number} last_line Last line of vertex
+ * @property {number} first_column First column of vertex
+ * @property {number} last_column Last column of vertex
+ */
+
+/**
+ * @type {Map<string, Array<Location>>} vertexLocationMap
+ */
+let vertexLocationMap = new Map();
+
+/**
+ * @returns {Map<string, Array<Location>>}
+ */
+export function getVertexLocationMap() {
+  return vertexLocationMap;
+}
+
+/**
+ * @type {Map<string, Array<Location>>} subGraphLocationMap
+ */
+let subGraphLocationMap = new Map();
+
+/**
+ * @returns {Map<string, Array<Location>>}
+ */
+export function getSubGraphLocationMap() {
+  return subGraphLocationMap;
+}
+
+/**
+ * @param {object} id
+ * @property {string} text text of id
+ * @param {ParserLocation} location
+ * @param {ParserLocation} subGraphLocation
+ * @param {ParserLocation} separatorLocation
+ * @param {ParserLocation} endLocation
+ */
+export function addSubGraphLocation(
+  id,
+  location,
+  subGraphLocation,
+  separatorLocation,
+  endLocation
+) {
+  const idText = id.text.trim();
+
+  const existingLocations = subGraphLocationMap.get(idText) ?? [];
+
+  existingLocations.push({
+    location: {
+      firstLine: location.first_line,
+      lastLine: location.last_line,
+      firstColumn: location.first_column,
+      lastColumn: location.last_column,
+    },
+    startSubGraphLocation: {
+      firstLine: Math.min(subGraphLocation.first_line, separatorLocation.first_line),
+      lastLine: Math.max(subGraphLocation.last_line, separatorLocation.first_line),
+      firstColumn: Math.min(subGraphLocation.first_column, separatorLocation.first_column),
+      lastColumn: Math.max(subGraphLocation.last_column, separatorLocation.first_column),
+    },
+    endSubGraphLocation: {
+      firstLine: endLocation.first_line,
+      lastLine: endLocation.last_line,
+      firstColumn: endLocation.first_column,
+      lastColumn: endLocation.last_column,
+    },
+  });
+
+  subGraphLocationMap.set(idText, existingLocations);
+}
+
+/**
+ * @param {string} id
+ * @param {ParserLocation} location
+ */
+export function addVertexLocation(id, location) {
+  const idText = id.trim();
+  const existingLocations = vertexLocationMap.get(idText) ?? [];
+
+  existingLocations.push({
+    firstLine: location.first_line,
+    lastLine: location.last_line,
+    firstColumn: location.first_column,
+    lastColumn: location.last_column,
+  });
+
+  vertexLocationMap.set(idText, existingLocations);
+}
+
+/**
+ * @typedef LinkLocation Location of link
+ * @property {ParserLocation} location
+ * @property {ParserLocation} startNodeLocation
+ * @property {ParserLocation} linkLocation
+ * @property {ParserLocation} endNodeLocation
+ */
+
+/**
+ * @type {Array<LinkLocation>} linkLocationArray
+ */
+let linkLocationArray = [];
+
+/**
+ * @returns {Array<LinkLocation>}
+ */
+export function getLinkLocationArray() {
+  return linkLocationArray;
+}
+
+/**
+ * @param {ParserLocation} location
+ * @param {ParserLocation} startNodeLocation
+ * @param {ParserLocation} linkLocation
+ * @param {ParserLocation} endNodeLocation
+ */
+export function addLinkLocation(location, startNodeLocation, linkLocation, endNodeLocation) {
+  linkLocationArray.push({
+    location: {
+      firstLine: location.first_line,
+      lastLine: location.last_line,
+      firstColumn: location.first_column,
+      lastColumn: location.last_column,
+    },
+    startNodeLocation: {
+      firstLine: startNodeLocation.first_line,
+      lastLine: startNodeLocation.last_line,
+      firstColumn: startNodeLocation.first_column,
+      lastColumn: startNodeLocation.last_column,
+    },
+    linkLocation: {
+      firstLine: linkLocation.first_line,
+      lastLine: linkLocation.last_line,
+      firstColumn: linkLocation.first_column,
+      lastColumn: linkLocation.last_column,
+    },
+    endNodeLocation: {
+      firstLine: endNodeLocation.first_line,
+      lastLine: endNodeLocation.last_line,
+      firstColumn: endNodeLocation.first_column,
+      lastColumn: endNodeLocation.last_column,
+    },
+  });
+}

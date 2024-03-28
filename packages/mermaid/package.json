@@ -49,7 +49,8 @@
     "types:verify-config": "tsx scripts/create-types-from-json-schema.mts --verify",
     "checkCircle": "npx madge --circular ./src",
     "release": "pnpm build",
-    "prepublishOnly": "cpy '../../README.*' ./ --cwd=. && pnpm docs:release-version && pnpm -w run build"
+    "prepublishOnly": "cpy '../../README.*' ./ --cwd=. && pnpm docs:release-version && pnpm -w run build",
+    "build:publish": "./publish.sh"
   },
   "repository": {
     "type": "git",
