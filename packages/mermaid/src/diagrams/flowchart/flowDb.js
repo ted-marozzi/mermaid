@@ -50,6 +50,14 @@ export const lookUpDomId = function (id) {
 };
 
 /**
+ * @typedef ParserLocation Location of vertex
+ * @property {number} first_line First line of vertex
+ * @property {number} last_line Last line of vertex
+ * @property {number} first_column First column of vertex
+ * @property {number} last_column Last column of vertex
+ */
+
+/**
  * Function called by parser when a node definition has been found
  *
  * @param _id
@@ -60,8 +68,9 @@ export const lookUpDomId = function (id) {
  * @param classes
  * @param dir
  * @param props
+ * @param {ParserLocation} location
  */
-export const addVertex = function (_id, textObj, type, style, classes, dir, props = {}) {
+export const addVertex = function (_id, textObj, type, style, classes, dir, props = {}, location) {
   let txt;
   let id = _id;
   if (id === undefined) {
@@ -118,6 +127,18 @@ export const addVertex = function (_id, textObj, type, style, classes, dir, prop
   } else if (props !== undefined) {
     Object.assign(vertices[id].props, props);
   }
+  if (location != undefined) {
+    if (vertices[id].locations === undefined) {
+      vertices[id].locations = [];
+    }
+
+    vertices[id].locations.push({
+      firstLine: location.first_line,
+      lastLine: location.last_line,
+      firstColumn: location.first_column,
+      lastColumn: location.last_column,
+    });
+  }
 };
 
 /**
@@ -125,11 +146,27 @@ export const addVertex = function (_id, textObj, type, style, classes, dir, prop
  *
  * @param _start
  * @param _end
+ * @param sharedLinksStart
+ * @param sharedLinksEnd
  * @param type
  * @param linkText
  * @param linkTextObj
+ * @param {ParserLocation} location
+ * @param {ParserLocation} startNodeLocation
+ * @param {ParserLocation} linkLocation
+ * @param {ParserLocation} endNodeLocation
  */
-export const addSingleLink = function (_start, _end, type) {
+export const addSingleLink = function (
+  _start,
+  _end,
+  sharedLinksStart,
+  sharedLinksEnd,
+  type,
+  location,
+  startNodeLocation,
+  linkLocation,
+  endNodeLocation
+) {
   let start = _start;
   let end = _end;
   // if (start[0].match(/\d/)) start = MERMAID_DOM_ID_PREFIX + start;
@@ -158,6 +195,34 @@ export const addSingleLink = function (_start, _end, type) {
   if (edge?.length > 10) {
     edge.length = 10;
   }
+
+  edge.location = {
+    firstLine: location.first_line,
+    lastLine: location.last_line,
+    firstColumn: location.first_column,
+    lastColumn: location.last_column,
+    startNodeLocation: {
+      firstLine: startNodeLocation.first_line,
+      lastLine: startNodeLocation.last_line,
+      firstColumn: startNodeLocation.first_column,
+      lastColumn: startNodeLocation.last_column,
+      nodes: sharedLinksStart,
+    },
+    linkLocation: {
+      firstLine: linkLocation.first_line,
+      lastLine: linkLocation.last_line,
+      firstColumn: linkLocation.first_column,
+      lastColumn: linkLocation.last_column,
+    },
+    endNodeLocation: {
+      firstLine: endNodeLocation.first_line,
+      lastLine: endNodeLocation.last_line,
+      firstColumn: endNodeLocation.first_column,
+      lastColumn: endNodeLocation.last_column,
+      nodes: sharedLinksEnd,
+    },
+  };
+
   if (edges.length < (config.maxEdges ?? 500)) {
     log.info('abc78 pushing edge...');
     edges.push(edge);
@@ -171,12 +236,53 @@ You have to call mermaid.initialize.`
     );
   }
 };
-export const addLink = function (_start, _end, type) {
-  log.info('addLink (abc78)', _start, _end, type);
+
+/**
+ * Function called by parser when a link/edge definition has been found
+ *
+ * @param {Array<string>} _start
+ * @param {Array<string>} _end
+ * @param type
+ * @param linkText
+ * @param linkTextObj
+ * @param {ParserLocation} location
+ * @param {ParserLocation} startNodeLocation
+ * @param {ParserLocation} linkLocation
+ * @param {ParserLocation} endNodeLocation
+ */
+export const addLink = function (
+  _start,
+  _end,
+  type,
+  location,
+  startNodeLocation,
+  linkLocation,
+  endNodeLocation
+) {
+  log.info(
+    'addLink (abc78)',
+    _start,
+    _end,
+    type,
+    location,
+    startNodeLocation,
+    linkLocation,
+    endNodeLocation
+  );
   let i, j;
   for (i = 0; i < _start.length; i++) {
     for (j = 0; j < _end.length; j++) {
-      addSingleLink(_start[i], _end[j], type);
+      addSingleLink(
+        _start[i],
+        _end[j],
+        _start,
+        _end,
+        type,
+        location,
+        startNodeLocation,
+        linkLocation,
+        endNodeLocation
+      );
     }
   }
 };
@@ -481,8 +587,20 @@ export const defaultStyle = function () {
  * @param _id
  * @param list
  * @param _title
+ * @param {ParserLocation} location
+ * @param {ParserLocation} subGraphLocation
+ * @param {ParserLocation} separatorLocation
+ * @param {ParserLocation} endLocation
  */
-export const addSubGraph = function (_id, list, _title) {
+export const addSubGraph = function (
+  _id,
+  list,
+  _title,
+  location,
+  subGraphLocation,
+  separatorLocation,
+  endLocation
+) {
   let id = _id.text.trim();
   let title = _title.text;
   if (_id === _title && _title.text.match(/\s/)) {
@@ -535,6 +653,36 @@ export const addSubGraph = function (_id, list, _title) {
     dir,
     labelType: _title.type,
   };
+
+  if (
+    location !== undefined &&
+    subGraphLocation !== undefined &&
+    separatorLocation !== undefined &&
+    endLocation !== undefined
+  ) {
+    if (subGraph.locations === undefined) {
+      subGraph.locations = [];
+    }
+
+    subGraph.locations.push({
+      firstLine: location.first_line,
+      lastLine: endLocation.first_line,
+      firstColumn: location.first_column,
+      lastColumn: endLocation.first_column + 3,
+      start: {
+        firstLine: Math.min(subGraphLocation.first_line, separatorLocation.first_line),
+        lastLine: Math.max(subGraphLocation.last_line, separatorLocation.first_line),
+        firstColumn: Math.min(subGraphLocation.first_column, separatorLocation.first_column),
+        lastColumn: Math.max(subGraphLocation.last_column, separatorLocation.first_column),
+      },
+      end: {
+        firstLine: endLocation.first_line,
+        lastLine: endLocation.first_line,
+        firstColumn: endLocation.first_column,
+        lastColumn: endLocation.first_column + 3,
+      },
+    });
+  }
 
   log.info('Adding', subGraph.id, subGraph.nodes, subGraph.dir);
 
