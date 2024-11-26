@@ -23,6 +23,8 @@ export type FlowVertexTypeParam =
   | 'lean_right'
   | 'lean_left';
 
+export type FlowVertexTypeParamWithStyle = FlowVertexTypeParam | 'style';
+
 export interface FlowVertex {
   classes: string[];
   dir?: string;
@@ -45,7 +47,15 @@ export interface FlowVertex {
   defaultWidth?: number;
   imageAspectRatio?: number;
   constraint?: 'on' | 'off';
+  locations: Array<Location & { type: FlowVertexTypeParamWithStyle }>;
 }
+
+export type Location = {
+  firstLine: number;
+  lastLine: number;
+  firstColumn: number;
+  lastColumn: number;
+};
 
 export interface FlowText {
   text: string;
@@ -62,6 +72,12 @@ export interface FlowEdge {
   length?: number;
   text: string;
   labelType: 'text';
+  location: Location & {
+    startNodeLocation: Location & { nodes: Array<string> };
+    linkLocation: Location;
+    endNodeLocation: Location & { nodes: Array<string> };
+  };
+  styleLocations: Array<Location>;
 }
 
 export interface FlowClass {
@@ -77,6 +93,7 @@ export interface FlowSubGraph {
   labelType: string;
   nodes: string[];
   title: string;
+  locations: Array<Location & { start: Location; end: Location }>;
 }
 
 export interface FlowLink {

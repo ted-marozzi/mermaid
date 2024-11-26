@@ -546,13 +546,13 @@ export const render = async (
       { x: x1, y: y1 + h / 2 },
       { x: x1 - w / 2, y: y1 },
     ];
-    log.debug(
-      `UIO diamondIntersection calc abc89:
-  outsidePoint: ${JSON.stringify(outsidePoint)}
-  insidePoint : ${JSON.stringify(insidePoint)}
-  node        : x:${bounds.x} y:${bounds.y} w:${bounds.width} h:${bounds.height}`,
-      polyPoints
-    );
+    //   log.debug(
+    //     `UIO diamondIntersection calc abc89:
+    // outsidePoint: ${JSON.stringify(outsidePoint)}
+    // insidePoint : ${JSON.stringify(insidePoint)}
+    // node        : x:${bounds.x} y:${bounds.y} w:${bounds.width} h:${bounds.height}`,
+    //     polyPoints
+    //   );
 
     const intersections = [];
 
@@ -611,10 +611,10 @@ export const render = async (
     outsidePoint: { x: number; y: number },
     insidePoint: { x: number; y: number }
   ) => {
-    log.debug(`intersection calc abc89:
-  outsidePoint: ${JSON.stringify(outsidePoint)}
-  insidePoint : ${JSON.stringify(insidePoint)}
-  node        : x:${node.x} y:${node.y} w:${node.width} h:${node.height}`);
+    //   log.debug(`intersection calc abc89:
+    // outsidePoint: ${JSON.stringify(outsidePoint)}
+    // insidePoint : ${JSON.stringify(insidePoint)}
+    // node        : x:${node.x} y:${node.y} w:${node.width} h:${node.height}`);
     const x = node.x;
     const y = node.y;
 
@@ -1021,7 +1021,7 @@ export const render = async (
           endNode,
           data4Layout.diagramId
         );
-        log.info('APA12 edge points after insert', JSON.stringify(edge.points));
+        // log.info('APA12 edge points after insert', JSON.stringify(edge.points));
 
         edge.x = edge.labels[0].x + offset.x + edge.labels[0].width / 2;
         edge.y = edge.labels[0].y + offset.y + edge.labels[0].height / 2;

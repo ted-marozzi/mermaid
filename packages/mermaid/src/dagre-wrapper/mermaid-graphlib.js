@@ -268,8 +268,8 @@ export const adjustClustersAndEdges = (graph, depth) => {
   // in the cluster in order to fake the edge
   graph.edges().forEach(function (e) {
     const edge = graph.edge(e);
-    log.warn('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(e));
-    log.warn('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(graph.edge(e)));
+    // log.warn('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(e));
+    // log.warn('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(graph.edge(e)));
 
     let v = e.v;
     let w = e.w;

@@ -22,7 +22,7 @@ import type {
   FlowText,
   FlowEdge,
   FlowLink,
-  FlowVertexTypeParam,
+  FlowVertexTypeParamWithStyle,
 } from './types.js';
 import type { NodeMetaData } from '../../types.js';
 
@@ -60,17 +60,25 @@ export const lookUpDomId = function (id: string) {
   return id;
 };
 
+type ParserLocation = {
+  first_line: number;
+  last_line: number;
+  first_column: number;
+  last_column: number;
+};
+
 /**
  * Function called by parser when a node definition has been found
  */
 export const addVertex = function (
   id: string,
   textObj: FlowText,
-  type: FlowVertexTypeParam,
+  type: FlowVertexTypeParamWithStyle,
   style: string[],
   classes: string[],
   dir: string,
   props = {},
+  location: ParserLocation,
   shapeData: any
 ) {
   // console.log('addVertex', id, shapeData);
@@ -87,6 +95,7 @@ export const addVertex = function (
       domId: MERMAID_DOM_ID_PREFIX + id + '-' + vertexCounter,
       styles: [],
       classes: [],
+      locations: [],
     };
     vertices.set(id, vertex);
   }
@@ -106,7 +115,7 @@ export const addVertex = function (
       vertex.text = id;
     }
   }
-  if (type !== undefined) {
+  if (type !== undefined && type !== 'style') {
     vertex.type = type;
   }
   if (style !== undefined && style !== null) {
@@ -181,17 +190,74 @@ export const addVertex = function (
       vertex.assetHeight = Number(doc.h);
     }
   }
+
+  if (location != undefined) {
+    if (vertex.locations === undefined) {
+      vertex.locations = [];
+    }
+
+    vertex.locations.push({
+      firstLine: location.first_line,
+      lastLine: location.last_line,
+      firstColumn: location.first_column,
+      lastColumn: location.last_column,
+      type,
+    });
+  }
 };
 
 /**
  * Function called by parser when a link/edge definition has been found
  *
  */
-export const addSingleLink = function (_start: string, _end: string, type: any) {
+export const addSingleLink = function (
+  _start: string,
+  _end: string,
+  sharedLinksStart: Array<string>,
+  sharedLinksEnd: Array<string>,
+  type: any,
+  location: ParserLocation,
+  startNodeLocation: ParserLocation,
+  linkLocation: ParserLocation,
+  endNodeLocation: ParserLocation
+) {
   const start = _start;
   const end = _end;
 
-  const edge: FlowEdge = { start: start, end: end, type: undefined, text: '', labelType: 'text' };
+  const edge: FlowEdge = {
+    start: start,
+    end: end,
+    type: undefined,
+    text: '',
+    labelType: 'text',
+    location: {
+      firstLine: location.first_line,
+      lastLine: location.last_line,
+      firstColumn: location.first_column,
+      lastColumn: location.last_column,
+      startNodeLocation: {
+        firstLine: startNodeLocation.first_line,
+        lastLine: startNodeLocation.last_line,
+        firstColumn: startNodeLocation.first_column,
+        lastColumn: startNodeLocation.last_column,
+        nodes: sharedLinksStart,
+      },
+      linkLocation: {
+        firstLine: linkLocation.first_line,
+        lastLine: linkLocation.last_line,
+        firstColumn: linkLocation.first_column,
+        lastColumn: linkLocation.last_column,
+      },
+      endNodeLocation: {
+        firstLine: endNodeLocation.first_line,
+        lastLine: endNodeLocation.last_line,
+        firstColumn: endNodeLocation.first_column,
+        lastColumn: endNodeLocation.last_column,
+        nodes: sharedLinksEnd,
+      },
+    },
+    styleLocations: [],
+  };
   log.info('abc78 Got edge...', edge);
   const linkTextObj = type.text;
 
@@ -225,11 +291,29 @@ You have to call mermaid.initialize.`
   }
 };
 
-export const addLink = function (_start: string[], _end: string[], type: unknown) {
+export const addLink = function (
+  _start: string[],
+  _end: string[],
+  type: unknown,
+  location: ParserLocation,
+  startNodeLocation: ParserLocation,
+  linkLocation: ParserLocation,
+  endNodeLocation: ParserLocation
+) {
   log.info('addLink', _start, _end, type);
   for (const start of _start) {
     for (const end of _end) {
-      addSingleLink(start, end, type);
+      addSingleLink(
+        start,
+        end,
+        _start,
+        _end,
+        type,
+        location,
+        startNodeLocation,
+        linkLocation,
+        endNodeLocation
+      );
     }
   }
 };
@@ -255,7 +339,11 @@ export const updateLinkInterpolate = function (
  * Updates a link with a style
  *
  */
-export const updateLink = function (positions: ('default' | number)[], style: string[]) {
+export const updateLink = function (
+  positions: ('default' | number)[],
+  style: string[],
+  location: ParserLocation
+) {
   positions.forEach(function (pos) {
     if (typeof pos === 'number' && pos >= edges.length) {
       throw new Error(
@@ -278,6 +366,16 @@ export const updateLink = function (positions: ('default' | number)[], style: st
       ) {
         edges[pos]?.style?.push('fill:none');
       }
+
+      if (edges[pos].styleLocations == null) {
+        edges[pos].styleLocations = [];
+      }
+      edges[pos].styleLocations.push({
+        firstColumn: location.first_column,
+        firstLine: location.first_line,
+        lastColumn: location.last_column,
+        lastLine: location.last_line,
+      });
     }
   });
 };
@@ -537,7 +635,11 @@ export const defaultStyle = function () {
 export const addSubGraph = function (
   _id: { text: string },
   list: string[],
-  _title: { text: string; type: string }
+  _title: { text: string; type: string },
+  location: ParserLocation,
+  subGraphLocation: ParserLocation,
+  separatorLocation: ParserLocation,
+  endLocation: ParserLocation
 ) {
   let id: string | undefined = _id.text.trim();
   let title = _title.text;
@@ -579,14 +681,41 @@ export const addSubGraph = function (
   title = title || '';
   title = sanitizeText(title);
   subCount = subCount + 1;
-  const subGraph = {
+  const subGraph: FlowSubGraph = {
     id: id,
     nodes: nodeList,
     title: title.trim(),
     classes: [],
     dir,
     labelType: _title.type,
+    locations: [],
   };
+
+  if (
+    location !== undefined &&
+    subGraphLocation !== undefined &&
+    separatorLocation !== undefined &&
+    endLocation !== undefined
+  ) {
+    subGraph.locations.push({
+      firstLine: location.first_line,
+      lastLine: endLocation.first_line,
+      firstColumn: location.first_column,
+      lastColumn: endLocation.first_column + 3,
+      start: {
+        firstLine: Math.min(subGraphLocation.first_line, separatorLocation.first_line),
+        lastLine: Math.max(subGraphLocation.last_line, separatorLocation.first_line),
+        firstColumn: Math.min(subGraphLocation.first_column, separatorLocation.first_column),
+        lastColumn: Math.max(subGraphLocation.last_column, separatorLocation.first_column),
+      },
+      end: {
+        firstLine: endLocation.first_line,
+        lastLine: endLocation.first_line,
+        firstColumn: endLocation.first_column,
+        lastColumn: endLocation.first_column + 3,
+      },
+    });
+  }
 
   log.info('Adding', subGraph.id, subGraph.nodes, subGraph.dir);
 

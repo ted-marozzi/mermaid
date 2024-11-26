@@ -373,13 +373,13 @@ statement
     | clickStatement separator
     {$$=[];}
     | subgraph SPACE textNoTags SQS text SQE separator document end
-    {$$=yy.addSubGraph($textNoTags,$document,$text);}
+    {$$=yy.addSubGraph($textNoTags,$document,$text,@$, @subgraph, @separator, @end);}
     | subgraph SPACE textNoTags separator document end
-    {$$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
+    {$$=yy.addSubGraph($textNoTags,$document,$textNoTags,@$, @subgraph, @separator, @end);}
     // | subgraph SPACE textNoTags separator document end
     // {$$=yy.addSubGraph($textNoTags,$document,$textNoTags);}
     | subgraph separator document end
-    {$$=yy.addSubGraph(undefined,$document,undefined);}
+    {$$=yy.addSubGraph(undefined,$document,undefined,@$, @subgraph, @separator, @end);}
     | direction
     | acc_title acc_title_value  { $$=$acc_title_value.trim();yy.setAccTitle($$); }
     | acc_descr acc_descr_value  { $$=$acc_descr_value.trim();yy.setAccDescription($$); }
@@ -396,15 +396,15 @@ shapeData:
     ;
 
 vertexStatement: vertexStatement link node shapeData
-        { /* console.warn('vs shapeData',$vertexStatement.stmt,$node, $shapeData);*/ yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined,$shapeData); yy.addLink($vertexStatement.stmt,$node,$link); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
+        { /* console.warn('vs shapeData',$vertexStatement.stmt,$node, $shapeData); TODO: Do we need shape data in link locations? */ yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined, @$, $shapeData); yy.addLink($vertexStatement.stmt,$node,$link, @$, @vertexStatement, @link, @node); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
     | vertexStatement link node
-        { /*console.warn('vs',$vertexStatement.stmt,$node);*/ yy.addLink($vertexStatement.stmt,$node,$link); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
+        { /*console.warn('vs',$vertexStatement.stmt,$node);*/ yy.addLink($vertexStatement.stmt,$node,$link, @$, @vertexStatement, @link, @node); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
     |  vertexStatement link node spaceList
-        { /* console.warn('vs',$vertexStatement.stmt,$node); */ yy.addLink($vertexStatement.stmt,$node,$link); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
+        { /* console.warn('vs',$vertexStatement.stmt,$node); */ yy.addLink($vertexStatement.stmt,$node,$link, @$, @vertexStatement, @link, @node); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
     |node spaceList { /*console.warn('vertexStatement: node spaceList', $node);*/ $$ = {stmt: $node, nodes:$node }}
     |node shapeData {
-        /*console.warn('vertexStatement: node shapeData', $node[0], $shapeData);*/
-        yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined,$shapeData);
+        /*console.warn('vertexStatement: node shapeData', $node[0], $shapeData); TODO(Ted): add in location data*/
+        yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined,@$, $shapeData);
         $$ = {stmt: $node, nodes:$node, shapeData: $shapeData}
     }
     |node { /* console.warn('vertexStatement: single node', $node); */ $$ = {stmt: $node, nodes:$node }}
@@ -413,7 +413,7 @@ vertexStatement: vertexStatement link node shapeData
 node: styledVertex
         { /*console.warn('nod', $styledVertex);*/ $$ = [$styledVertex];}
     | node shapeData spaceList AMP spaceList styledVertex
-        {  yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined,$shapeData); $$ = $node.concat($styledVertex); /*console.warn('pip2', $node[0], $styledVertex, $$);*/  }
+        {  yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined, @$, $shapeData); $$ = $node.concat($styledVertex); /*console.warn('pip2', $node[0], $styledVertex, $$);*/  }
     | node spaceList AMP spaceList styledVertex
         { $$ = $node.concat($styledVertex); /*console.warn('pip', $node[0], $styledVertex, $$);*/  }
     ;
@@ -425,39 +425,39 @@ styledVertex: vertex
     ;
 
 vertex:  idString SQS text SQE
-        {$$ = $idString;yy.addVertex($idString,$text,'square');}
+        {$$ = $idString;yy.addVertex($idString,$text,'square',undefined,undefined,undefined,undefined,@$);}
     | idString DOUBLECIRCLESTART text DOUBLECIRCLEEND
-        {$$ = $idString;yy.addVertex($idString,$text,'doublecircle');}
+        {$$ = $idString;yy.addVertex($idString,$text,'doublecircle',undefined,undefined,undefined,undefined,@$);}
     | idString PS PS text PE PE
-        {$$ = $idString;yy.addVertex($idString,$text,'circle');}
+        {$$ = $idString;yy.addVertex($idString,$text,'circle',undefined,undefined,undefined,undefined,@$);}
     | idString '(-' text '-)'
-        {$$ = $idString;yy.addVertex($idString,$text,'ellipse');}
+        {$$ = $idString;yy.addVertex($idString,$text,'ellipse',undefined,undefined,undefined,undefined,@$);}
     | idString STADIUMSTART text STADIUMEND
-        {$$ = $idString;yy.addVertex($idString,$text,'stadium');}
+        {$$ = $idString;yy.addVertex($idString,$text,'stadium',undefined,undefined,undefined,undefined,@$);}
     | idString SUBROUTINESTART text SUBROUTINEEND
-        {$$ = $idString;yy.addVertex($idString,$text,'subroutine');}
+        {$$ = $idString;yy.addVertex($idString,$text,'subroutine',undefined,undefined,undefined,undefined,@$);}
     | idString VERTEX_WITH_PROPS_START NODE_STRING\[field] COLON NODE_STRING\[value] PIPE text SQE
-        {$$ = $idString;yy.addVertex($idString,$text,'rect',undefined,undefined,undefined, Object.fromEntries([[$field, $value]]));}
+        {$$ = $idString;yy.addVertex($idString,$text,'rect',undefined,undefined,undefined, Object.fromEntries([[$field, $value]]), @$);}
     | idString CYLINDERSTART text CYLINDEREND
-        {$$ = $idString;yy.addVertex($idString,$text,'cylinder');}
+        {$$ = $idString;yy.addVertex($idString,$text,'cylinder',undefined,undefined,undefined,undefined,@$);}
     | idString PS text PE
-        {$$ = $idString;yy.addVertex($idString,$text,'round');}
+        {$$ = $idString;yy.addVertex($idString,$text,'round',undefined,undefined,undefined,undefined,@$);}
     | idString DIAMOND_START text DIAMOND_STOP
-        {$$ = $idString;yy.addVertex($idString,$text,'diamond');}
+        {$$ = $idString;yy.addVertex($idString,$text,'diamond',undefined,undefined,undefined,undefined,@$);}
     | idString DIAMOND_START DIAMOND_START text DIAMOND_STOP DIAMOND_STOP
-        {$$ = $idString;yy.addVertex($idString,$text,'hexagon');}
+        {$$ = $idString;yy.addVertex($idString,$text,'hexagon',undefined,undefined,undefined,undefined,@$);}
     | idString TAGEND text SQE
-        {$$ = $idString;yy.addVertex($idString,$text,'odd');}
+        {$$ = $idString;yy.addVertex($idString,$text,'odd',undefined,undefined,undefined,undefined,@$);}
     | idString TRAPSTART text TRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'trapezoid');}
+        {$$ = $idString;yy.addVertex($idString,$text,'trapezoid',undefined,undefined,undefined,undefined,@$);}
     | idString INVTRAPSTART text INVTRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'inv_trapezoid');}
+        {$$ = $idString;yy.addVertex($idString,$text,'inv_trapezoid',undefined,undefined,undefined,undefined,@$);}
     | idString TRAPSTART text INVTRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'lean_right');}
+        {$$ = $idString;yy.addVertex($idString,$text,'lean_right',undefined,undefined,undefined,undefined,@$);}
     | idString INVTRAPSTART text TRAPEND
-        {$$ = $idString;yy.addVertex($idString,$text,'lean_left');}
+        {$$ = $idString;yy.addVertex($idString,$text,'lean_left',undefined,undefined,undefined,undefined,@$);}
     | idString
-        { /*console.warn('h: ', $idString);*/$$ = $idString;yy.addVertex($idString);}
+        { /*console.warn('h: ', $idString);*/$$ = $idString;yy.addVertex($idString,undefined,undefined,undefined,undefined,undefined,undefined,@$);}
     ;
 
 
@@ -547,18 +547,18 @@ clickStatement
     ;
 
 styleStatement:STYLE SPACE idString SPACE stylesOpt
-    {$$ = $STYLE;yy.addVertex($idString,undefined,undefined,$stylesOpt);}
+    {$$ = $STYLE;yy.addVertex($idString,undefined,"style",$stylesOpt,undefined,undefined,undefined,@$);}
     ;
 
 linkStyleStatement
     : LINKSTYLE SPACE DEFAULT SPACE stylesOpt
-          {$$ = $LINKSTYLE;yy.updateLink([$DEFAULT],$stylesOpt);}
+          {$$ = $LINKSTYLE;yy.updateLink([$DEFAULT],$stylesOpt, @$);}
     | LINKSTYLE SPACE numList SPACE stylesOpt
-          {$$ = $LINKSTYLE;yy.updateLink($numList,$stylesOpt);}
+          {$$ = $LINKSTYLE;yy.updateLink($numList,$stylesOpt, @$);}
     | LINKSTYLE SPACE DEFAULT SPACE INTERPOLATE SPACE alphaNum SPACE stylesOpt
-          {$$ = $LINKSTYLE;yy.updateLinkInterpolate([$DEFAULT],$alphaNum);yy.updateLink([$DEFAULT],$stylesOpt);}
+          {$$ = $LINKSTYLE;yy.updateLinkInterpolate([$DEFAULT],$alphaNum);yy.updateLink([$DEFAULT],$stylesOpt, @$);}
     | LINKSTYLE SPACE numList SPACE INTERPOLATE SPACE alphaNum SPACE stylesOpt
-          {$$ = $LINKSTYLE;yy.updateLinkInterpolate($numList,$alphaNum);yy.updateLink($numList,$stylesOpt);}
+          {$$ = $LINKSTYLE;yy.updateLinkInterpolate($numList,$alphaNum);yy.updateLink($numList,$stylesOpt, @$);}
     | LINKSTYLE SPACE DEFAULT SPACE INTERPOLATE SPACE alphaNum
           {$$ = $LINKSTYLE;yy.updateLinkInterpolate([$DEFAULT],$alphaNum);}
     | LINKSTYLE SPACE numList SPACE INTERPOLATE SPACE alphaNum

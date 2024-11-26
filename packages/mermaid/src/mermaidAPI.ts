@@ -24,8 +24,10 @@ import { preprocessDiagram } from './preprocess.js';
 import getStyles from './styles.js';
 import theme from './themes/index.js';
 import type { D3Element, ParseOptions, ParseResult, RenderResult } from './types.js';
+import { processDirectives, processFrontmatter } from './preprocess.js';
 import { decodeEntities } from './utils.js';
 import { toBase64 } from './utils/base64.js';
+import { extractFrontMatter } from './diagram-api/frontmatter.js';
 
 const MAX_TEXTLENGTH = 50_000;
 const MAX_TEXTLENGTH_EXCEEDED_MSG =
@@ -536,6 +538,10 @@ export const mermaidAPI = Object.freeze({
   parse,
   getDiagramFromText,
   initialize,
+  preprocessDiagram,
+  processFrontmatter,
+  extractFrontMatter,
+  processDirectives,
   getConfig: configApi.getConfig,
   setConfig: configApi.setConfig,
   getSiteConfig: configApi.getSiteConfig,

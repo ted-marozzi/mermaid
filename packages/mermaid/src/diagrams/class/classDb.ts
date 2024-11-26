@@ -62,8 +62,9 @@ export const setClassLabel = function (_id: string, label: string) {
 
   const { className } = splitClassNameAndType(id);
   classes.get(className)!.label = label;
-  classes.get(className)!.text =
-    `${label}${classes.get(className)!.type ? `<${classes.get(className)!.type}>` : ''}`;
+  classes.get(className)!.text = `${label}${
+    classes.get(className)!.type ? `<${classes.get(className)!.type}>` : ''
+  }`;
 };
 
 /**
@@ -153,7 +154,7 @@ export const getNotes = function () {
 };
 
 export const addRelation = function (classRelation: ClassRelation) {
-  log.debug('Adding relation: ' + JSON.stringify(classRelation));
+  // log.debug('Adding relation: ' + JSON.stringify(classRelation));
   // Due to relationType cannot just check if it is equal to 'none' or it complains, can fix this later
   const invalidTypes = [
     relationType.LOLLIPOP,

@@ -39,7 +39,7 @@
     "mermaid": "workspace:^"
   },
   "peerDependencies": {
-    "mermaid": "^10 || ^11"
+    "@ted-marozzi/mermaid": "^10 || ^11"
   },
   "files": [
     "dist"

@@ -44,7 +44,7 @@
     "test:coverage": "vitest --coverage",
     "test:check:tsc": "tsx scripts/tsc-check.ts",
     "prepare": "husky && pnpm build",
-    "pre-commit": "lint-staged"
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "repository": {
     "type": "git",

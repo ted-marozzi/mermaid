@@ -93,8 +93,8 @@ export const drawEdge = function (elem, path, relation, conf, diagObj) {
       path.points[l - 1]
     );
 
-    log.debug('cardinality_1_point ' + JSON.stringify(cardinality_1_point));
-    log.debug('cardinality_2_point ' + JSON.stringify(cardinality_2_point));
+    // log.debug('cardinality_1_point ' + JSON.stringify(cardinality_1_point));
+    // log.debug('cardinality_2_point ' + JSON.stringify(cardinality_2_point));
 
     p1_card_x = cardinality_1_point.x;
     p1_card_y = cardinality_1_point.y;
@@ -124,7 +124,7 @@ export const drawEdge = function (elem, path, relation, conf, diagObj) {
       .attr('height', bounds.height + conf.padding);
   }
 
-  log.info('Rendering relation ' + JSON.stringify(relation));
+  // log.info('Rendering relation ' + JSON.stringify(relation));
   if (relation.relationTitle1 !== undefined && relation.relationTitle1 !== 'none') {
     const g = elem.append('g').attr('class', 'cardinality');
     g.append('text')

@@ -192,10 +192,10 @@ export const draw = function (text, id, _version, diagObj) {
 
   const relations = diagObj.db.getRelations();
   relations.forEach(function (relation) {
-    log.info(
-      // cspell:ignore tjoho
-      'tjoho' + getGraphId(relation.id1) + getGraphId(relation.id2) + JSON.stringify(relation)
-    );
+    // log.info(
+    //   // cspell:ignore tjoho
+    //   'tjoho' + getGraphId(relation.id1) + getGraphId(relation.id2) + JSON.stringify(relation)
+    // );
     g.setEdge(
       getGraphId(relation.id1),
       getGraphId(relation.id2),
@@ -208,7 +208,7 @@ export const draw = function (text, id, _version, diagObj) {
 
   const notes = diagObj.db.getNotes();
   notes.forEach(function (note) {
-    log.debug(`Adding note: ${JSON.stringify(note)}`);
+    // log.debug(`Adding note: ${JSON.stringify(note)}`);
     const node = svgDraw.drawNote(diagram, note, conf, diagObj);
     idCache[node.id] = node;
 
@@ -239,7 +239,7 @@ export const draw = function (text, id, _version, diagObj) {
   dagreLayout(g);
   g.nodes().forEach(function (v) {
     if (v !== undefined && g.node(v) !== undefined) {
-      log.debug('Node ' + v + ': ' + JSON.stringify(g.node(v)));
+      // log.debug('Node ' + v + ': ' + JSON.stringify(g.node(v)));
       root
         .select('#' + (diagObj.db.lookUpDomId(v) || v))
         .attr(
@@ -255,7 +255,7 @@ export const draw = function (text, id, _version, diagObj) {
 
   g.edges().forEach(function (e) {
     if (e !== undefined && g.edge(e) !== undefined) {
-      log.debug('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(g.edge(e)));
+      // log.debug('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(g.edge(e)));
       svgDraw.drawEdge(diagram, g.edge(e), g.edge(e).relation, conf, diagObj);
     }
   });
