@@ -319,7 +319,7 @@ export function layout(db: BlockDB) {
   layoutBlocks(root, db);
   // Position blocks relative to parents
   // positionBlock(root, root, db);
-  log.debug('getBlocks', JSON.stringify(root, null, 2));
+  // log.debug('getBlocks', JSON.stringify(root, null, 2));
 
   const { minX, minY, maxX, maxY } = findBounds(root);
 

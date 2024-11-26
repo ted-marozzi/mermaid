@@ -133,7 +133,7 @@ export const getNotes = function () {
 };
 
 export const addRelation = function (relation: ClassRelation) {
-  log.debug('Adding relation: ' + JSON.stringify(relation));
+  // log.debug('Adding relation: ' + JSON.stringify(relation));
   addClass(relation.id1);
   addClass(relation.id2);
 

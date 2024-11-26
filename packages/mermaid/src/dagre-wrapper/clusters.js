@@ -54,7 +54,7 @@ const rect = (parent, node) => {
     node.diff = -node.padding / 2;
   }
 
-  log.trace('Data ', node, JSON.stringify(node));
+  // log.trace('Data ', node, JSON.stringify(node));
   // center the rect around its coordinate
   rect
     .attr('style', node.style)

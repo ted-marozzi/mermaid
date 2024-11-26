@@ -228,7 +228,7 @@ const renderDoc = (doc, diagram, parentId, altBkg, root, domDocument, diagObj) =
 
   graph.nodes().forEach(function (v) {
     if (v !== undefined && graph.node(v) !== undefined) {
-      log.warn('Node ' + v + ': ' + JSON.stringify(graph.node(v)));
+      // log.warn('Node ' + v + ': ' + JSON.stringify(graph.node(v)));
       root
         .select('#' + svgElem.id + ' #' + v)
         .attr(
@@ -262,7 +262,7 @@ const renderDoc = (doc, diagram, parentId, altBkg, root, domDocument, diagObj) =
         divider.setAttribute('x2', pWidth - pShift - 8);
       });
     } else {
-      log.debug('No Node ' + v + ': ' + JSON.stringify(graph.node(v)));
+      // log.debug('No Node ' + v + ': ' + JSON.stringify(graph.node(v)));
     }
   });
 
@@ -270,7 +270,7 @@ const renderDoc = (doc, diagram, parentId, altBkg, root, domDocument, diagObj) =
 
   graph.edges().forEach(function (e) {
     if (e !== undefined && graph.edge(e) !== undefined) {
-      log.debug('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(graph.edge(e)));
+      // log.debug('Edge ' + e.v + ' -> ' + e.w + ': ' + JSON.stringify(graph.edge(e)));
       drawEdge(diagram, graph.edge(e), graph.edge(e).relation);
     }
   });

@@ -838,7 +838,7 @@ export const draw = async function (text, id, _version, diagObj) {
   });
 
   insertChildren(graph.children, parentLookupDb);
-  log.info('after layout', JSON.stringify(graph, null, 2));
+  // log.info('after layout', JSON.stringify(graph, null, 2));
   const g = await elk.layout(graph);
   drawNodes(0, 0, g.children, svg, subGraphsEl, diagObj, 0);
   log.info('after layout', g);

@@ -29,8 +29,9 @@ import { evaluate } from './diagrams/common/common.js';
 import isEmpty from 'lodash-es/isEmpty.js';
 import { setA11yDiagramInfo, addSVGa11yTitleDescription } from './accessibility.js';
 import type { DiagramMetadata, DiagramStyleClassDef } from './diagram-api/types.js';
-import { preprocessDiagram } from './preprocess.js';
+import { preprocessDiagram, processDirectives, processFrontmatter } from './preprocess.js';
 import { decodeEntities } from './utils.js';
+import { extractFrontMatter } from './diagram-api/frontmatter.js';
 
 const MAX_TEXTLENGTH = 50_000;
 const MAX_TEXTLENGTH_EXCEEDED_MSG =
@@ -609,6 +610,10 @@ export const mermaidAPI = Object.freeze({
   parse,
   getDiagramFromText,
   initialize,
+  preprocessDiagram,
+  processFrontmatter,
+  extractFrontMatter,
+  processDirectives,
   getConfig: configApi.getConfig,
   setConfig: configApi.setConfig,
   getSiteConfig: configApi.getSiteConfig,

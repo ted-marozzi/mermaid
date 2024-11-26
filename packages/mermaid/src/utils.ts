@@ -372,7 +372,7 @@ const calcCardinalityPosition = (
   points: Point[],
   initialPosition: Point
 ) => {
-  log.info(`our points ${JSON.stringify(points)}`);
+  // log.info(`our points ${JSON.stringify(points)}`);
   if (points[0] !== initialPosition) {
     points = points.reverse();
   }

@@ -599,7 +599,7 @@ export const draw = function (_text, id, _version, diagObj) {
   c4ShapeInRow = db.getC4ShapeInRow();
   c4BoundaryInRow = db.getC4BoundaryInRow();
 
-  log.debug(`C:${JSON.stringify(conf, null, 2)}`);
+  // log.debug(`C:${JSON.stringify(conf, null, 2)}`);
 
   const diagram =
     securityLevel === 'sandbox' ? root.select(`[id="${id}"]`) : select(`[id="${id}"]`);

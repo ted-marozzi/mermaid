@@ -16,7 +16,7 @@ const cleanupText = (code: string) => {
   );
 };
 
-const processFrontmatter = (code: string) => {
+export const processFrontmatter = (code: string) => {
   const { text, metadata } = extractFrontMatter(code);
   const { displayMode, title, config = {} } = metadata;
   if (displayMode) {
@@ -29,7 +29,7 @@ const processFrontmatter = (code: string) => {
   return { title, config, text };
 };
 
-const processDirectives = (code: string) => {
+export const processDirectives = (code: string) => {
   const initDirective = utils.detectInit(code) ?? {};
   const wrapDirectives = utils.detectDirective(code, 'wrap');
   if (Array.isArray(wrapDirectives)) {
