@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
-    "mermaid": "workspace:^"
+    "@ted-marozzi/mermaid": "workspace:^"
   },
   "peerDependencies": {
     "@ted-marozzi/mermaid": "^10 || ^11"

@@ -36,7 +36,7 @@
     "@zenuml/core": "^3.23.27"
   },
   "devDependencies": {
-    "mermaid": "workspace:^"
+    "@ted-marozzi/mermaid": "workspace:^"
   },
   "peerDependencies": {
     "@ted-marozzi/mermaid": "^10 || ^11"
