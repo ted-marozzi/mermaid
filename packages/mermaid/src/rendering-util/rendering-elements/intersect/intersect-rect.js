@@ -1,4 +1,7 @@
 const intersectRect = (node, point) => {
+  if (node == null || point == null) {
+    return { x: 0, y: 0 };
+  }
   var x = node.x;
   var y = node.y;
 

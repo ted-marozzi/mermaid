@@ -242,8 +242,8 @@ importers:
         specifier: ^0.12.3
         version: 0.12.3
       dagre-d3-es:
-        specifier: 7.0.11
-        version: 7.0.11(patch_hash=spbe2ai6agwbiu5m7grubxsy2u)
+        specifier: ^7.0.11
+        version: 7.0.11
       dayjs:
         specifier: ^1.11.10
         version: 1.11.13
@@ -14235,7 +14235,7 @@ snapshots:
       es5-ext: 0.10.64
       type: 2.7.3
 
-  dagre-d3-es@7.0.11(patch_hash=spbe2ai6agwbiu5m7grubxsy2u):
+  dagre-d3-es@7.0.11:
     dependencies:
       d3: 7.9.0
       lodash-es: 4.17.21
