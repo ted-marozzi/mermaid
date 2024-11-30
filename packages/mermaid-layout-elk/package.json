@@ -1,7 +1,8 @@
 {
-  "name": "@mermaid-js/layout-elk",
-  "version": "0.1.5",
+  "name": "@ted-marozzi/layout-elk",
+  "version": "0.1.5-pro.9",
   "description": "ELK layout engine for mermaid",
+  "author": "Ted Marozzi",
   "module": "dist/mermaid-layout-elk.core.mjs",
   "types": "dist/layouts.d.ts",
   "type": "module",
@@ -23,10 +24,6 @@
     "type": "git",
     "url": "https://github.com/mermaid-js/mermaid"
   },
-  "contributors": [
-    "Knut Sveidqvist",
-    "Sidharth Vinod"
-  ],
   "license": "MIT",
   "dependencies": {
     "d3": "^7.9.0",

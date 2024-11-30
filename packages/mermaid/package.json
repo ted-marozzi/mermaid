@@ -1,6 +1,6 @@
 {
   "name": "@ted-marozzi/mermaid",
-  "version": "11.4.0-pro.18",
+  "version": "11.4.0-pro.22",
   "description": "Markdown-ish syntax for generating flowcharts, mindmaps, sequence diagrams, class diagrams, gantt charts, git graphs and more.",
   "type": "module",
   "module": "./dist/mermaid.core.mjs",
@@ -57,7 +57,7 @@
     "type": "git",
     "url": "https://github.com/mermaid-js/mermaid"
   },
-  "author": "Knut Sveidqvist",
+  "author": "Ted Marozzi",
   "license": "MIT",
   "standard": {
     "ignore": [

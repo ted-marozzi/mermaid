@@ -1,6 +1,12 @@
 import { curveLinear } from 'd3';
 import ELK from 'elkjs/lib/elk.bundled.js';
-import type { InternalHelpers, LayoutData, RenderOptions, SVG, SVGGroup } from 'mermaid';
+import type {
+  InternalHelpers,
+  LayoutData,
+  RenderOptions,
+  SVG,
+  SVGGroup,
+} from '@ted-marozzi/mermaid';
 import { type TreeData, findCommonAncestor } from './find-common-ancestor.js';
 
 type Node = LayoutData['nodes'][number];
@@ -145,8 +151,13 @@ export const render = async (
           if (node.isGroup) {
             log.debug('Id abc88 subgraph = ', node.id, node.x, node.y, node.labelData);
             const subgraphEl = subgraphsEl.insert('g').attr('class', 'subgraph');
+            log.debug('Node', node);
             // TODO use faster way of cloning
-            const clusterNode = JSON.parse(JSON.stringify(node));
+            const clusterNode = JSON.parse(
+              JSON.stringify(node, (key, value) =>
+                key.startsWith('__reactFiber') ? undefined : value
+              )
+            );
             clusterNode.x = node.offset.posX + node.width / 2;
             clusterNode.y = node.offset.posY + node.height / 2;
             clusterNode.width = Math.max(clusterNode.width, node.labelData.width);
