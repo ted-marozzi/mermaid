@@ -23,7 +23,7 @@ export type FlowVertexTypeParam =
   | 'lean_right'
   | 'lean_left';
 
-export type FlowVertexTypeParamWithStyle = FlowVertexTypeParam | 'style';
+export type LocationType = ShapeID | FlowVertexTypeParam | 'style';
 
 export interface FlowVertex {
   classes: string[];
@@ -47,15 +47,16 @@ export interface FlowVertex {
   defaultWidth?: number;
   imageAspectRatio?: number;
   constraint?: 'on' | 'off';
-  locations: Array<Location & { type: FlowVertexTypeParamWithStyle }>;
+  isShape?: boolean;
+  locations: (Location & { type: LocationType })[];
 }
 
-export type Location = {
+export interface Location {
   firstLine: number;
   lastLine: number;
   firstColumn: number;
   lastColumn: number;
-};
+}
 
 export interface FlowText {
   text: string;

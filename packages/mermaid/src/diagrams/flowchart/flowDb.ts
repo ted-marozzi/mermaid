@@ -22,7 +22,8 @@ import type {
   FlowText,
   FlowEdge,
   FlowLink,
-  FlowVertexTypeParamWithStyle,
+  LocationType,
+  FlowVertexTypeParam,
 } from './types.js';
 import type { NodeMetaData } from '../../types.js';
 
@@ -73,12 +74,13 @@ type ParserLocation = {
 export const addVertex = function (
   id: string,
   textObj: FlowText,
-  type: FlowVertexTypeParamWithStyle,
+  type: FlowVertexTypeParam | 'style',
   style: string[],
   classes: string[],
   dir: string,
   props = {},
   location: ParserLocation,
+  shapeDataLocation: ParserLocation | undefined,
   shapeData: any
 ) {
   // console.log('addVertex', id, shapeData);
@@ -138,6 +140,8 @@ export const addVertex = function (
   }
 
   if (shapeData !== undefined) {
+    vertex.isShape = true;
+
     let yamlData;
     // detect if shapeData contains a newline character
     // console.log('shapeData', shapeData);
@@ -196,13 +200,24 @@ export const addVertex = function (
       vertex.locations = [];
     }
 
-    vertex.locations.push({
-      firstLine: location.first_line,
-      lastLine: location.last_line,
-      firstColumn: location.first_column,
-      lastColumn: location.last_column,
-      type,
-    });
+    const resultingLocation =
+      shapeDataLocation == null
+        ? {
+            firstLine: location.first_line,
+            lastLine: location.last_line,
+            firstColumn: location.first_column,
+            lastColumn: location.last_column,
+            type,
+          }
+        : {
+            firstLine: Math.min(location.first_line, shapeDataLocation.first_line),
+            lastLine: Math.max(location.last_line, shapeDataLocation.last_line),
+            firstColumn: Math.min(location.first_column, shapeDataLocation.first_column),
+            lastColumn: Math.max(location.last_column, shapeDataLocation.last_column + 1),
+            type,
+          };
+
+    vertex.locations.push(resultingLocation);
   }
 };
 

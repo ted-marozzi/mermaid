@@ -396,15 +396,15 @@ shapeData:
     ;
 
 vertexStatement: vertexStatement link node shapeData
-        { /* console.warn('vs shapeData',$vertexStatement.stmt,$node, $shapeData); TODO: Do we need shape data in link locations? */ yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined, @$, $shapeData); yy.addLink($vertexStatement.stmt,$node,$link, @$, @vertexStatement, @link, @node); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
+        { /* console.warn('vs shapeData',$vertexStatement.stmt,$node, $shapeData); */ yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined, @$, @shapeData, $shapeData); yy.addLink($vertexStatement.stmt,$node,$link, @$, @vertexStatement, @link, @node); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
     | vertexStatement link node
         { /*console.warn('vs',$vertexStatement.stmt,$node);*/ yy.addLink($vertexStatement.stmt,$node,$link, @$, @vertexStatement, @link, @node); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
     |  vertexStatement link node spaceList
         { /* console.warn('vs',$vertexStatement.stmt,$node); */ yy.addLink($vertexStatement.stmt,$node,$link, @$, @vertexStatement, @link, @node); $$ = { stmt: $node, nodes: $node.concat($vertexStatement.nodes) } }
     |node spaceList { /*console.warn('vertexStatement: node spaceList', $node);*/ $$ = {stmt: $node, nodes:$node }}
     |node shapeData {
-        /*console.warn('vertexStatement: node shapeData', $node[0], $shapeData); TODO(Ted): add in location data*/
-        yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined,@$, $shapeData);
+        /*console.warn('vertexStatement: node shapeData', $node[0], $shapeData); */
+        yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined, @$, @shapeData ,$shapeData);
         $$ = {stmt: $node, nodes:$node, shapeData: $shapeData}
     }
     |node { /* console.warn('vertexStatement: single node', $node); */ $$ = {stmt: $node, nodes:$node }}
@@ -413,7 +413,7 @@ vertexStatement: vertexStatement link node shapeData
 node: styledVertex
         { /*console.warn('nod', $styledVertex);*/ $$ = [$styledVertex];}
     | node shapeData spaceList AMP spaceList styledVertex
-        {  yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined, @$, $shapeData); $$ = $node.concat($styledVertex); /*console.warn('pip2', $node[0], $styledVertex, $$);*/  }
+        {  yy.addVertex($node[0],undefined,undefined,undefined, undefined,undefined, undefined, @$, @shapeData, $shapeData); $$ = $node.concat($styledVertex); /*console.warn('pip2', $node[0], $styledVertex, $$);*/  }
     | node spaceList AMP spaceList styledVertex
         { $$ = $node.concat($styledVertex); /*console.warn('pip', $node[0], $styledVertex, $$);*/  }
     ;
