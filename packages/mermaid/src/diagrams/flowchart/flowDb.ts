@@ -193,6 +193,8 @@ export const addVertex = function (
     if (doc.h) {
       vertex.assetHeight = Number(doc.h);
     }
+  } else {
+    vertex.isShape = false;
   }
 
   if (location != undefined) {
