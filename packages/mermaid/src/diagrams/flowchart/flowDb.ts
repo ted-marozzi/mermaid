@@ -2,7 +2,11 @@ import { select } from 'd3';
 import utils, { getEdgeId } from '../../utils.js';
 import { getConfig, defaultConfig } from '../../diagram-api/diagramAPI.js';
 import common from '../common/common.js';
-import { isValidShape, type ShapeID } from '../../rendering-util/rendering-elements/shapes.js';
+import {
+  isValidShape,
+  shapesDefs,
+  type ShapeID,
+} from '../../rendering-util/rendering-elements/shapes.js';
 import type { Node, Edge } from '../../rendering-util/types.js';
 import { log } from '../../logger.js';
 import * as yaml from 'js-yaml';
@@ -193,7 +197,9 @@ export const addVertex = function (
     if (doc.h) {
       vertex.assetHeight = Number(doc.h);
     }
-  } else {
+  }
+
+  if (!isValidShape(vertex.type ?? '')) {
     vertex.isShape = false;
   }
 
