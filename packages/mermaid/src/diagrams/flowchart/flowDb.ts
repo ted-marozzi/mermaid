@@ -123,6 +123,7 @@ export const addVertex = function (
   }
   if (type !== undefined && type !== 'style') {
     vertex.type = type;
+    vertex.isShape = false;
   }
   if (style !== undefined && style !== null) {
     style.forEach(function (s) {
@@ -144,8 +145,6 @@ export const addVertex = function (
   }
 
   if (shapeData !== undefined) {
-    vertex.isShape = true;
-
     let yamlData;
     // detect if shapeData contains a newline character
     // console.log('shapeData', shapeData);
@@ -165,6 +164,7 @@ export const addVertex = function (
         throw new Error(`No such shape: ${doc.shape}.`);
       }
       vertex.type = doc?.shape;
+      vertex.isShape = true;
     }
 
     if (doc?.label) {
@@ -197,10 +197,6 @@ export const addVertex = function (
     if (doc.h) {
       vertex.assetHeight = Number(doc.h);
     }
-  }
-
-  if (!isValidShape(vertex.type ?? '')) {
-    vertex.isShape = false;
   }
 
   if (location != undefined) {
