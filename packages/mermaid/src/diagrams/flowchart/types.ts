@@ -74,11 +74,11 @@ export interface FlowEdge {
   text: string;
   labelType: 'text';
   location: Location & {
-    startNodeLocation: Location & { nodes: Array<string> };
+    startNodeLocation: Location & { nodes: string[] };
     linkLocation: Location;
-    endNodeLocation: Location & { nodes: Array<string> };
+    endNodeLocation: Location & { nodes: string[] };
   };
-  styleLocations: Array<Location>;
+  styleLocations: Location[];
 }
 
 export interface FlowClass {
@@ -94,7 +94,7 @@ export interface FlowSubGraph {
   labelType: string;
   nodes: string[];
   title: string;
-  locations: Array<Location & { start: Location; end: Location }>;
+  locations: (Location & { start: Location; end: Location })[];
 }
 
 export interface FlowLink {
