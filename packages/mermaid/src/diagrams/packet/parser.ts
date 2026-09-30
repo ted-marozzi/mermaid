@@ -14,7 +14,7 @@ const populate = (ast: Packet) => {
   let word: PacketWord = [];
   let row = 1;
   const { bitsPerRow } = db.getConfig();
-  for (let { start, end, label } of ast.blocks) {
+  for (let { start, end, bits, label } of ast.blocks) {
     if (end && end < start) {
       throw new Error(`Packet block ${start} - ${end} is invalid. End must be greater than start.`);
     }
@@ -29,7 +29,11 @@ const populate = (ast: Packet) => {
     log.debug(`Packet block ${start} - ${lastByte} with label ${label}`);
 
     while (word.length <= bitsPerRow + 1 && db.getPacket().length < maxPacketSize) {
-      const [block, nextBlock] = getNextFittingBlock({ start, end, label }, row, bitsPerRow);
+      const [block, nextBlock] = getNextFittingBlock(
+        { start, end, bits, label },
+        row,
+        bitsPerRow
+      );
       word.push(block);
       if (block.end + 1 === row * bitsPerRow) {
         db.pushWord(word);
@@ -39,7 +43,7 @@ const populate = (ast: Packet) => {
       if (!nextBlock) {
         break;
       }
-      ({ start, end, label } = nextBlock);
+      ({ start, end, bits, label } = nextBlock);
     }
   }
   db.pushWord(word);
@@ -62,15 +66,19 @@ const getNextFittingBlock = (
     return [block as Required<PacketBlock>, undefined];
   }
 
+  const rowEnd = row * bitsPerRow - 1;
+  const nextStart = row * bitsPerRow;
   return [
     {
       start: block.start,
-      end: row * bitsPerRow - 1,
+      end: rowEnd,
+      bits: rowEnd - block.start + 1,
       label: block.label,
     },
     {
-      start: row * bitsPerRow,
+      start: nextStart,
       end: block.end,
+      bits: block.end - nextStart + 1,
       label: block.label,
     },
   ];
